@@ -146,7 +146,7 @@ function displayCodeInfo(codeArray, containerId) {
     for (const key in item) {
       if (key != "code-line") {
         const listItem = document.createElement('li');
-        listItem.textContent = item[key];
+        listItem.textContent = key + ": " + item[key];
         statsElement.appendChild(listItem);
       }
       codeElement.appendChild(statsElement);
