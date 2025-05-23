@@ -69,6 +69,20 @@ function render(content) {
   displayCodeInfo(codeData, 'codeMetrics');
 }
 
+function splitAtFirstCapital(str) {
+  if (!str) {
+    return [];
+  }
+
+  const index = str.search(/[A-Z]/);
+
+  if (index === -1 || index === 0) {
+    return [str];
+  }
+
+  return [str.slice(0, index), str.slice(index)];
+}
+
 function displayCodeInfo(codeArray, containerId) {
   // Get the container element where we'll add the code information
   const container = document.getElementById(containerId);
@@ -90,8 +104,19 @@ function displayCodeInfo(codeArray, containerId) {
     // metric name
     var name = document.createElement('div');
     name.classList.add('overall-metrics-name');
-    var nameText = document.createTextNode(item);
+    var readableNameArr = splitAtFirstCapital(item);
+    if (readableNameArr.size > 1) {
+      var readableName = readableNameArr[0].charAt(0).toUpperCase() + readableNameArr[0].slice(1) + " " + readableNameArr[1];
+    }
+    else {
+      var readableName = readableNameArr[0];
+    }
+    var nameText = document.createTextNode(readableName);
     name.appendChild(nameText);
+
+    // Metric Value
+    var value = document.createElement('div');
+    value.classList.add('overall-metrics-value');
 
     if (typeof aggregateMetrics[item] === 'object') {
       // Function name
@@ -105,12 +130,14 @@ function displayCodeInfo(codeArray, containerId) {
       ref.classList.add('overall-metrics-link')
       ref.href = '#' + aggregateMetrics[item].function + '-metrics';
       ref.appendChild(funcName);
+
+      value.innerHTML = aggregateMetrics[item].value;
+    }
+    else {
+      value.innerHTML = aggregateMetrics[item];
     }
 
-    // Metric Value
-    var value = document.createElement('div');
-    value.classList.add('overall-metrics-value');
-    value.innerHTML = aggregateMetrics[item].value;
+
 
     // Add sub info to metric box
     metric.appendChild(name)
@@ -261,7 +288,7 @@ function createSortSelector(containerId, sortOptions, onSortChange) {
 
 // Example Usage:
 const sortOptions = {
-  cogComplexity: ['cogitive-complexity','Cognitive Complexity'],
+  cogComplexity: ['cognitive-complexity','Cognitive Complexity'],
   numlines: ['num-lines', 'Number of Lines'],
   numstatements: ['num-statements', 'Number of Statements'],
   numbranches: ['num-branches', 'Number of Branches'],
